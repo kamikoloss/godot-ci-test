@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://bk7407oqvav1n"]
+
+[ext_resource type="Texture2D" uid="uid://81pkj1hsro71" path="res://icon.svg" id="1_u7o5w"]
+
+[node name="Main" type="Node2D"]
+
+[node name="Icon" type="Sprite2D" parent="."]
+position = Vector2(640, 360)
+texture = ExtResource("1_u7o5w")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 1280.0
+offset_bottom = 360.0
+theme_override_font_sizes/font_size = 64
+text = "GODOT is GOD."
+horizontal_alignment = 1
+vertical_alignment = 1

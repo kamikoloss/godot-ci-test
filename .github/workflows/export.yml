@@ -15,8 +15,6 @@ jobs:
     permissions: write-all
     # Job name, can be anything
     name: Export Game
-    outputs:
-      timestamp: ${{ steps.timestamp.outputs.timestamp }}
     steps:
     #
     - name: set timestamp
@@ -44,7 +42,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         generateReleaseNotes: true
-        tag: ${{ github.ref_name }}.
+        tag: ${{ github.ref_name }}_${{ steps.timestamp.outputs.timestamp }}
         artifacts: ${{ steps.export.outputs.archive_directory }}/*
     #
     - name: upload artifact

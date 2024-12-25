@@ -15,7 +15,13 @@ jobs:
     permissions: write-all
     # Job name, can be anything
     name: Export Game
+    outputs:
+      timestamp: ${{ steps.timestamp.outputs.timestamp }}
     steps:
+    #
+    - name: set timestamp
+      id: timestamp
+      run: echo "timestamp=$(date +"%Y%m%d%H%M%S")" >> $GITHUB_ENV
     # Always include the checkout step so that 
     # your project is available for Godot to export
     - name: checkout
@@ -38,7 +44,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         generateReleaseNotes: true
-        tag: ${{ github.ref_name }}
+        tag: ${{ github.ref_name }}.
         artifacts: ${{ steps.export.outputs.archive_directory }}/*
     #
     - name: upload artifact

@@ -40,3 +40,9 @@ jobs:
         generateReleaseNotes: true
         tag: ${{ github.ref_name }}
         artifacts: ${{ steps.export.outputs.archive_directory }}/*
+    #
+    - name: upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifact
+        path: build/artifact

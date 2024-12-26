@@ -48,6 +48,7 @@ jobs:
       - name: Write secret to file
         run: |
           mkdir -v -p ~/.config/rclone/
+          touch ~/.config/rclone/rclone.conf
           cat << EOF > ~/.config/rclone/rclone.conf
           ${{ secrets.RCLONE_CONFIG_R2 }}
           EOF

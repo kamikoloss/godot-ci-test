@@ -79,6 +79,7 @@ jobs:
           curl https://rclone.org/install.sh | bash
           mkdir -v -p ~/.config/rclone/
           cat -n ${{ secrets.RCLONE_CONFIG_R2 }} | base64 --decode >> ~/.config/rclone/rclone.conf
+          cat ~/.config/rclone/rclone.conf
       - name: Deploy to Cloudflare R2
         run: |
-          rclone tree r2:games
+          rclone tree r2:

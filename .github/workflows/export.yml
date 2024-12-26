@@ -77,7 +77,7 @@ jobs:
         run: |
           apt-get update && apt-get install -y curl
           curl https://rclone.org/install.sh | bash
-          touch ~/.config/rclone/rclone.conf
+          mkdir -v -p ~/.config/rclone/
           cat -n ${{ secrets.RCLONE_CONFIG_R2 }} | base64 --decode >> ~/.config/rclone/rclone.conf
       - name: Deploy to Cloudflare R2
         run: |

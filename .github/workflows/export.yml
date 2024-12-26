@@ -43,6 +43,7 @@ jobs:
     container:
       image: barichello/godot-ci:4.3
     steps:
+      # Build
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -62,6 +63,7 @@ jobs:
         with:
           name: web
           path: build/web
+      # Deploy / GitHub Pages
       - name: Install rsync 📚
         run: |
           apt-get update && apt-get install -y rsync
@@ -70,3 +72,11 @@ jobs:
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: build/web # The folder the action should deploy.
+      # Deploy / Cloudflare R2
+      - name: Install rclone 📚
+        run: |
+          sudo -v ; curl https://rclone.org/install.sh | sudo bash
+          cat -n ${{ secrets.RCLONE_CONFIG_R2 }} | base64 --decode >> ~/.config/rclone/rclone.conf
+      - name: Deploy to Cloudflare R2
+        run: |
+          rclone tree r2:games

@@ -64,14 +64,14 @@ jobs:
           name: web
           path: build/web
       # Deploy / GitHub Pages
-      - name: Install rsync 📚
-        run: |
-          apt-get update && apt-get install -y rsync
-      - name: Deploy to GitHub Pages 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v4
-        with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: build/web # The folder the action should deploy.
+      #- name: Install rsync 📚
+      #  run: |
+      #    apt-get update && apt-get install -y rsync
+      #- name: Deploy to GitHub Pages 🚀
+      #  uses: JamesIves/github-pages-deploy-action@releases/v4
+      #  with:
+      #    branch: gh-pages # The branch the action should deploy to.
+      #    folder: build/web # The folder the action should deploy.
       # Deploy / Cloudflare R2
       - name: Install rclone 📚
         run: |
@@ -79,7 +79,7 @@ jobs:
           curl https://rclone.org/install.sh | bash
           mkdir -v -p ~/.config/rclone/
           echo -n ${{ secrets.RCLONE_CONFIG_R2 }} | base64 --decode >> ~/.config/rclone/rclone.conf
-          echo ~/.config/rclone/rclone.conf
+          cat ~/.config/rclone/rclone.conf
       - name: Deploy to Cloudflare R2
         run: |
           rclone --config ~/.config/rclone/rclone.conf tree r2:

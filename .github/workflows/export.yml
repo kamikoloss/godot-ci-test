@@ -45,14 +45,11 @@ jobs:
       #    branch: gh-pages # The branch the action should deploy to.
       #    folder: build/web # The folder the action should deploy.
       # Deploy / Cloudflare R2
-      - name: Write secret to file
+      - name: Retrieve the secret and decode it to a file
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.RCLONE_CONFIG_R2 }}
         run: |
-          mkdir -v -p ~/.config/rclone/
-          touch ~/.config/rclone/rclone.conf
-          cat << EOF > ~/.config/rclone/rclone.conf
-          ${{ secrets.RCLONE_CONFIG_R2 }}
-          EOF
-          cat ~/.config/rclone/rclone.conf
+          echo $RCLONE_CONFIG_R2  | base64 --decode > ~/.config/rclone/rclone.conf
       - name: Install rclone 📚
         run: |
           apt-get update && apt-get install -y curl

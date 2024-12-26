@@ -11,7 +11,7 @@ env:
 jobs:
   export-web:
     name: Web Export
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     container:
       image: barichello/godot-ci:4.3
     steps:
@@ -57,4 +57,5 @@ jobs:
           curl https://rclone.org/install.sh | bash
       - name: Deploy to Cloudflare R2
         run: |
-          rclone --config ~/.config/rclone/rclone.conf tree r2:
+          rclone copy build/web r2:games
+          rclone tree r2:games

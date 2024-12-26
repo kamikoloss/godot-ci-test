@@ -47,9 +47,10 @@ jobs:
       # Deploy / Cloudflare R2
       - name: Retrieve the secret and decode it to a file
         env:
-          CERTIFICATE_BASE64: ${{ secrets.RCLONE_CONFIG_R2 }}
+          RCLONE_CONFIG_R2_BASE64: ${{ secrets.RCLONE_CONFIG_R2 }}
         run: |
-          echo $RCLONE_CONFIG_R2  | base64 --decode > ~/.config/rclone/rclone.conf
+          mkdir -v -p ~/.config/rclone/
+          echo $RCLONE_CONFIG_R2_BASE64 | base64 --decode > ~/.config/rclone/rclone.conf
       - name: Install rclone 📚
         run: |
           apt-get update && apt-get install -y curl

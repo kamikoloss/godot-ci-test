@@ -1,11 +1,9 @@
 name: "godot-ci export"
 on: push
 
-# NOTE: If your `project.godot` is at the repository root, set `PROJECT_PATH` below to ".".
-
 env:
   GODOT_VERSION: 4.3
-  EXPORT_NAME: test-project
+  EXPORT_NAME: godot-ci-test
   PROJECT_PATH: godot-ci-test
 
 jobs:
@@ -15,6 +13,7 @@ jobs:
     container:
       image: barichello/godot-ci:4.3
     steps:
+
       # Build
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,6 +34,7 @@ jobs:
         with:
           name: web
           path: build/web
+
       # Deploy / GitHub Pages
       #- name: Install rsync 📚
       #  run: |
@@ -44,18 +44,19 @@ jobs:
       #  with:
       #    branch: gh-pages # The branch the action should deploy to.
       #    folder: build/web # The folder the action should deploy.
+
       # Deploy / Cloudflare R2
       - name: Retrieve the secret and decode it to a file
         env:
           RCLONE_CONFIG_R2_BASE64: ${{ secrets.RCLONE_CONFIG_R2 }}
         run: |
           mkdir -v -p ~/.config/rclone/
-          echo $RCLONE_CONFIG_R2_BASE64 | base64 --decode > ~/.config/rclone/rclone.conf
+          echo ${RCLONE_CONFIG_R2_BASE64} | base64 --decode > ~/.config/rclone/rclone.conf
       - name: Install rclone 📚
         run: |
           apt-get update && apt-get install -y curl
           curl https://rclone.org/install.sh | bash
       - name: Deploy to Cloudflare R2
         run: |
-          rclone copy build/web r2:games
-          rclone tree r2:games
+          rclone copy build/web r2:games/${EXPORT_NAME}/
+          rclone tree r2:games/${EXPORT_NAME}/

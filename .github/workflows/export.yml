@@ -82,4 +82,4 @@ jobs:
           cat ~/.config/rclone/rclone.conf
       - name: Deploy to Cloudflare R2
         run: |
-          rclone tree r2:
+          rclone --config ~/.config/rclone/rclone.conf tree r2:

@@ -36,6 +36,7 @@ jobs:
         with:
           name: web
           path: build/web
+          retention-days: 7
       - name: Retrieve the secret and decode it to a file
         env:
           RCLONE_CONFIG_BASE64: ${{ secrets.RCLONE_CONFIG_BASE64 }}

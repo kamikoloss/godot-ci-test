@@ -1,49 +1,22 @@
 name: "godot-ci export"
-on: push
+on:
+  push:
+    tags:
+      - "*"
 
 env:
   GODOT_VERSION: 4.3
-  EXPORT_NAME: godot-ci-test
-  PROJECT_PATH: godot-ci-test
+  PROJECT_PATH: godot-ci-test # root からのプロジェクトの相対パス
+  S3_BUCKET_NAME: gloxinia.test # S3 のバケット名
+  S3_REGION: ap-northeast-1 # S3 のリージョン
 
 jobs:
-
-  export-windows:
-    name: Windows Export
-    runs-on: ubuntu-20.04
-    container:
-      image: barichello/godot-ci:4.3
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-      - name: Setup
-        run: |
-          mkdir -v -p ~/.local/share/godot/export_templates/
-          mkdir -v -p ~/.config/
-          mv /root/.config/godot ~/.config/godot
-          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
-      - name: Windows Build
-        run: |
-          mkdir -v -p build/windows
-          EXPORT_DIR="$(readlink -f build)"
-          cd $PROJECT_PATH
-          godot --headless --verbose --export-release "Windows Desktop" "$EXPORT_DIR/windows/$EXPORT_NAME.exe"
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows
-          path: build/windows
-
   export-web:
     name: Web Export
     runs-on: ubuntu-24.04
     container:
       image: barichello/godot-ci:4.3
     steps:
-
-      # Build
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -63,35 +36,17 @@ jobs:
         with:
           name: web
           path: build/web
-
-      # Deploy / GitHub Pages
-      #- name: Install rsync 📚
-      #  run: |
-      #    apt-get update && apt-get install -y rsync
-      #- name: Deploy to GitHub Pages 🚀
-      #  uses: JamesIves/github-pages-deploy-action@releases/v4
-      #  with:
-      #    branch: gh-pages # The branch the action should deploy to.
-      #    folder: build/web # The folder the action should deploy.
-
-      # Deploy / Cloudflare R2
       - name: Retrieve the secret and decode it to a file
         env:
-          RCLONE_CONFIG_R2_BASE64: ${{ secrets.RCLONE_CONFIG_R2 }}
+          RCLONE_CONFIG_BASE64: ${{ secrets.RCLONE_CONFIG_BASE64 }}
         run: |
           mkdir -v -p ~/.config/rclone/
-          echo ${RCLONE_CONFIG_R2_BASE64} | base64 --decode > ~/.config/rclone/rclone.conf
-      - name: Install rclone 📚
+          echo ${RCLONE_CONFIG_BASE64} | base64 --decode > ~/.config/rclone/rclone.conf
+      - name: Install rclone
         run: |
           apt-get update && apt-get install -y curl
           curl https://rclone.org/install.sh | bash
-      - name: Deploy to Cloudflare R2
+      - name: Deploy to Amazon S3
         run: |
-          rclone copy build/web r2:games/${EXPORT_NAME}/
-          rclone tree r2:games/${EXPORT_NAME}/
-
-      # Release
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: build/web/*
+          rclone copy build/web s3:${S3_BUCKET_NAME}/ --s3-location-constraint ${S3_REGION}
+          rclone tree s3:${S3_BUCKET_NAME}/
